@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire Nom/Prénom</title>
+</head>
+<body>
+    <main class="content">
+    <div class="container">
+        <h2 style="margin-bottom:0;">Formulaire présence</h2>
+        <h3 style="margin-top:0;">Rétro des Compa'venThuriers <br> Le Samedi 11 avril 2026</h3>
+        <div class="places-restantes" style="margin-bottom:10px;">
+            Places restantes : {{ places_restantes }} / {{ capacite }}
+        </div>
+        {% if places_restantes > 0 %}
+        <form id="formulaire">
+            <label for="nom">Nom :</label>
+            <input type="text" id="nom" name="nom" required>
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" required>
+            <label for="email">Adresse e-mail :</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">Envoyer</button>
+        </form>
+        <div class="success" id="successMsg" style="display:none;">Réponse enregistrée !</div>
+        <div class="error" id="errorMsg" style="display:none; color:red; margin-top:10px;"></div>
+        {% else %}
+        <div style="color:red; font-weight:bold;">⚠️ La capacité maximale est atteinte, il n'est plus possible de s'inscrire.</div>
+        {% endif %}
+    </div>
+    </main>
+    
+    <footer class="site-footer">
+        &copy; 2026 Compa'venThuriers. Tous droits réservés.
+        <button id="admin-btn">Admin</button>
+    </footer>
+    <script>
+        const formEl = document.getElementById('formulaire');
+        if (formEl) {
+            formEl.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const nom = document.getElementById('nom').value;
+                const prenom = document.getElementById('prenom').value;
+                const email = document.getElementById('email') ? document.getElementById('email').value : '';
+                const response = await fetch('/api/reponse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nom, prenom, email })
+                });
+                const successMsg = document.getElementById('successMsg');
+                const errorMsg = document.getElementById('errorMsg');
+                if (response.ok) {
+                    if (errorMsg) { errorMsg.style.display = 'none'; errorMsg.textContent = ''; }
+                    if (successMsg) successMsg.style.display = 'block';
+                    formEl.reset();
+                    // Remplace dynamiquement le nombre de places restantes sans dupliquer
+                    const placesDiv = document.querySelector('.places-restantes');
+                    const res = await fetch('/api/places_restantes');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (placesDiv) placesDiv.textContent = `Places restantes : ${data.places_restantes} / ${data.capacite}`;
+                        if (data.places_restantes === 0) {
+                            formEl.style.display = 'none';
+                            let oldAlert = document.getElementById('alert-capacite');
+                            if (!oldAlert) {
+                                const alert = document.createElement('div');
+                                alert.id = 'alert-capacite';
+                                alert.style.color = 'red';
+                                alert.style.fontWeight = 'bold';
+                                alert.textContent = "⚠️ La capacité maximale est atteinte, il n'est plus possible de s'inscrire.";
+                                document.querySelector('.container').appendChild(alert);
+                            }
+                        }
+                    }
+                } else if (response.status === 409) {
+                    // Duplicate detected
+                    if (successMsg) successMsg.style.display = 'none';
+                    if (errorMsg) { errorMsg.textContent = 'Vous êtes déjà inscrit (doublon détecté).'; errorMsg.style.display = 'block'; }
+                } else {
+                    if (successMsg) successMsg.style.display = 'none';
+                    if (errorMsg) { errorMsg.textContent = 'Erreur lors de l\'envoi. Veuillez réessayer.'; errorMsg.style.display = 'block'; }
+                }
+            });
+        }
+        // Ajout du bouton admin (simple prompt)
+        const adminBtn = document.getElementById('admin-btn');
+        if (adminBtn) {
+            adminBtn.addEventListener('click', function() {
+                const pwd = prompt('Mot de passe admin :');
+                if (pwd === 'Compa2023.') {
+                    window.location.href = '/reponses';
+                } else if (pwd !== null) {
+                    alert('Mot de passe incorrect.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
