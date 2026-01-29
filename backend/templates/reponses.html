@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Réponses enregistrées</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -31,18 +31,7 @@
                 <th>Email</th>
                 <th>Actions</th>
             </tr>
-            {% for id, nom, prenom, email, date in reponses %}
-            <tr data-id="{{ id }}">
-                <td class="id">{{ id }}</td>
-                <td class="nom">{{ nom }}</td>
-                <td class="prenom">{{ prenom }}</td>
-                <td class="email">{{ email }}</td>
-                <td>
-                    <button class="edit-btn">Modifier</button>
-                    <button class="delete-btn">Supprimer</button>
-                </td>
-            </tr>
-            {% endfor %}
+            <!-- LIGNES_REPONSES -->
         </table>
 
         <!-- Message dynamique pour aucune réponse (géré par JS) -->
