@@ -1,3 +1,32 @@
+// Route d'administration pour afficher les réponses
+app.get('/reponses', async (req, res) => {
+    const fs = require('fs');
+    try {
+        // Récupère toutes les réponses
+        const { data: reponses, error: repError } = await supabase
+            .from('reponses')
+            .select('id, nom, prenom, email')
+            .order('id', { ascending: true });
+        if (repError) throw repError;
+        // Récupère la capacité
+        const capacite = await getCapacite();
+        // Prépare les lignes du tableau
+        let lignes = '';
+        if (reponses && reponses.length > 0) {
+            for (const r of reponses) {
+                lignes += `<tr><td>${r.id}</td><td>${r.nom}</td><td>${r.prenom}</td><td>${r.email}</td><td><!-- Actions ici --></td></tr>`;
+            }
+        }
+        // Charge le template HTML
+        let html = fs.readFileSync(path.join(templatesPath, 'reponses.html'), 'utf8');
+        html = html.replace('{{ nb_reponses }}', reponses ? reponses.length : 0)
+                   .replace(/\{\{ *capacite *\}\}/g, capacite)
+                   .replace('<!-- LIGNES_REPONSES -->', lignes);
+        res.send(html);
+    } catch (err) {
+        res.status(500).send('Erreur lors de la récupération des réponses : ' + err.message);
+    }
+});
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
