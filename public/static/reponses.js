@@ -128,3 +128,28 @@ if (toggleBtn) {
         }
     });
 }
+
+// Gestion du bouton "Enregistrer" pour la capacité
+const saveCapaciteBtn = capaciteControls ? capaciteControls.querySelector('button[type="button"]') : null;
+if (saveCapaciteBtn) {
+    saveCapaciteBtn.addEventListener('click', async () => {
+        const capInput = document.getElementById('capacite');
+        if (!capInput) return;
+        const nouvelleCapacite = parseInt(capInput.value, 10);
+        if (isNaN(nouvelleCapacite) || nouvelleCapacite < 1) {
+            alert('Veuillez entrer une capacité valide.');
+            return;
+        }
+        const res = await fetch('/api/capacite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ capacite: nouvelleCapacite })
+        });
+        if (res.ok) {
+            await updateInfos();
+            capaciteControls.style.display = 'none';
+        } else {
+            alert('Erreur lors de la mise à jour de la capacité.');
+        }
+    });
+}
