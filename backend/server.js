@@ -183,23 +183,6 @@ app.get('/api/places_restantes', async (req, res) => {
     }
 });
 
-// Page d'accueil (formulaire)
-app.get('/', (req, res) => {
-    const fs = require('fs');
-    const capacite = getCapacite();
-    db.get('SELECT COUNT(*) as nb FROM reponses', (err, row) => {
-        const nb_reponses = row ? row.nb : 0;
-        const places_restantes = Math.max(0, capacite - nb_reponses);
-        // Remplacer les variables dans index.html
-        let html = fs.readFileSync(path.join(templatesPath, 'index.html'), 'utf8');
-        html = html.replace(/\{\{ *places_restantes *\}\}/g, places_restantes)
-                   .replace(/\{\{ *capacite *\}\}/g, capacite)
-                   .replace(/\{\{ *nb_reponses *\}\}/g, nb_reponses);
-        res.send(html);
-    });
-});
-
-
 // Connexion à PostgreSQL (Supabase)
 const db = new Pool({
     host: process.env.PGHOST,
