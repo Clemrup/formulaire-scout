@@ -4,8 +4,15 @@ async function updateInfos() {
     if (res.ok) {
         const data = await res.json();
         let nbReponsesElem = document.querySelector('.nb-reponses');
+        let capaciteElem = document.querySelector('.capacite');
         if (nbReponsesElem) {
             nbReponsesElem.textContent = data.nb_reponses;
+        }
+        if (capaciteElem) {
+            capaciteElem.textContent = data.capacite;
+            // Met à jour la valeur de l'input capacité
+            const capInput = document.getElementById('capacite');
+            if (capInput) capInput.value = data.capacite;
         }
         const table = document.getElementById('reponsesTable');
         const msg = document.querySelector('.aucune-reponse');
@@ -22,6 +29,7 @@ async function updateInfos() {
         }
     }
 }
+window.addEventListener('DOMContentLoaded', updateInfos);
 // Suppression
 Array.from(document.querySelectorAll('.delete-btn')).forEach(btn => {
     btn.addEventListener('click', async function() {
