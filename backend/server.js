@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const path = require('path');
 
@@ -34,22 +35,25 @@ function setCapacite(val) {
 }
 
 // API pour obtenir dynamiquement le nombre de places restantes
-app.get('/api/places_restantes', (req, res) => {
+app.get('/api/places_restantes', async (req, res) => {
     const capacite = getCapacite();
-    db.get('SELECT COUNT(*) as nb FROM reponses', (err, row) => {
-        if (err) return res.status(500).json({ error: 'Erreur DB' });
-        const nb_reponses = row.nb;
+    try {
+        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
+        const nb_reponses = parseInt(result.rows[0].nb, 10);
         const places_restantes = Math.max(0, capacite - nb_reponses);
         res.json({ places_restantes, capacite });
-    });
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur DB' });
+    }
 });
 
 // Page d'accueil (formulaire)
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     const fs = require('fs');
     const capacite = getCapacite();
-    db.get('SELECT COUNT(*) as nb FROM reponses', (err, row) => {
-        const nb_reponses = row ? row.nb : 0;
+    try {
+        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
+        const nb_reponses = parseInt(result.rows[0].nb, 10);
         const places_restantes = Math.max(0, capacite - nb_reponses);
         let html = fs.readFileSync(path.join(templatesPath, 'index.html'), 'utf8');
         html = html.replace(/\{\{ *places_restantes *\}\}/g, places_restantes)
@@ -75,28 +79,31 @@ app.get('/', (req, res) => {
         }
         html = html.replace('<!-- Le backend Node.js doit injecter dynamiquement le formulaire ou le message de capacité ici -->', bloc);
         res.send(html);
-    });
+    } catch (err) {
+        res.status(500).send('Erreur lors de la récupération des données');
+    }
 });
 
 // Page admin pour voir les réponses et la capacité
-app.get('/reponses', (req, res) => {
+app.get('/reponses', async (req, res) => {
     const fs = require('fs');
     const capacite = getCapacite();
-    db.all('SELECT id, nom, prenom, email, date FROM reponses ORDER BY id ASC', (err, rows) => {
-        db.get('SELECT COUNT(*) as nb FROM reponses', (err2, row2) => {
-            const nb_reponses = row2 ? row2.nb : 0;
-            let html = fs.readFileSync(path.join(templatesPath, 'reponses.html'), 'utf8');
-            html = html.replace(/\{\{ *capacite *\}\}/g, capacite)
-                       .replace(/\{\{ *nb_reponses *\}\}/g, nb_reponses);
-            // Injection des lignes du tableau à la place du marqueur
-            let rowsHtml = '';
-            for (const r of rows) {
-                rowsHtml += `<tr data-id="${r.id}"><td class="id">${r.id}</td><td class="nom">${r.nom}</td><td class="prenom">${r.prenom}</td><td class="email">${r.email}</td><td><button class="edit-btn">Modifier</button> <button class="delete-btn">Supprimer</button></td></tr>`;
-            }
-            html = html.replace('<!-- LIGNES_REPONSES -->', rowsHtml);
-            res.send(html);
-        });
-    });
+    try {
+        const rowsResult = await db.query('SELECT id, nom, prenom, email, date FROM reponses ORDER BY id ASC');
+        const countResult = await db.query('SELECT COUNT(*) as nb FROM reponses');
+        const nb_reponses = parseInt(countResult.rows[0].nb, 10);
+        let html = fs.readFileSync(path.join(templatesPath, 'reponses.html'), 'utf8');
+        html = html.replace(/\{\{ *capacite *\}\}/g, capacite)
+                   .replace(/\{\{ *nb_reponses *\}\}/g, nb_reponses);
+        let rowsHtml = '';
+        for (const r of rowsResult.rows) {
+            rowsHtml += `<tr data-id="${r.id}"><td class="id">${r.id}</td><td class="nom">${r.nom}</td><td class="prenom">${r.prenom}</td><td class="email">${r.email}</td><td><button class="edit-btn">Modifier</button> <button class="delete-btn">Supprimer</button></td></tr>`;
+        }
+        html = html.replace('<!-- LIGNES_REPONSES -->', rowsHtml);
+        res.send(html);
+    } catch (err) {
+        res.status(500).send('Erreur lors de la récupération des réponses');
+    }
 });
 
 // Modifier la capacité (POST depuis admin)
@@ -107,29 +114,23 @@ app.post('/reponses', (req, res) => {
 });
 
 // Supprimer une réponse par son id
-app.post('/reponses/supprimer/:id', (req, res) => {
+app.post('/reponses/supprimer/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    db.run('DELETE FROM reponses WHERE id = ?', [id], function(err) {
-        if (err) return res.status(500).json({ error: 'Erreur DB' });
-        // Réindexation (optionnelle, comme dans Python)
-        db.serialize(() => {
-            db.run('CREATE TABLE IF NOT EXISTS reponses_new (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT NOT NULL, prenom TEXT NOT NULL, email TEXT NOT NULL, date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-            db.run('INSERT INTO reponses_new (nom, prenom, email, date) SELECT nom, prenom, email, date FROM reponses ORDER BY id ASC');
-            db.run('DROP TABLE reponses');
-            db.run('ALTER TABLE reponses_new RENAME TO reponses');
-            res.status(204).send();
-        });
-    });
+    try {
+        await db.query('DELETE FROM reponses WHERE id = $1', [id]);
+        res.status(204).send();
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur DB' });
+    }
 });
 
 // Modifier une réponse par son id
-app.post('/reponses/modifier/:id', (req, res) => {
+app.post('/reponses/modifier/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const { nom, prenom, email } = req.body;
     if (!nom || !prenom || !email) {
         return res.status(400).json({ error: 'Champs manquants' });
     }
-    // Vérifier doublon
     function normalize(s) {
         if (!s) return '';
         const decomposed = s.normalize('NFD');
@@ -138,18 +139,19 @@ app.post('/reponses/modifier/:id', (req, res) => {
     const nom_n = normalize(nom);
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
-    db.all('SELECT id, nom, prenom, email FROM reponses', [], (err, rows) => {
+    try {
+        const rows = (await db.query('SELECT id, nom, prenom, email FROM reponses')).rows;
         for (const row of rows) {
             if (row.id === id) continue;
             if (normalize(row.nom) === nom_n && normalize(row.prenom) === prenom_n && normalize(row.email) === email_n) {
                 return res.status(409).json({ error: 'Doublon détecté' });
             }
         }
-        db.run('UPDATE reponses SET nom = ?, prenom = ?, email = ? WHERE id = ?', [nom, prenom, email, id], function(err) {
-            if (err) return res.status(500).json({ error: 'Erreur DB' });
-            res.json({ success: true });
-        });
-    });
+        await db.query('UPDATE reponses SET nom = $1, prenom = $2, email = $3 WHERE id = $4', [nom, prenom, email, id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur DB' });
+    }
 });
 
 // ...existing code...
@@ -169,14 +171,16 @@ function setCapacite(val) {
 }
 
 // API pour obtenir dynamiquement le nombre de places restantes
-app.get('/api/places_restantes', (req, res) => {
+app.get('/api/places_restantes', async (req, res) => {
     const capacite = getCapacite();
-    db.get('SELECT COUNT(*) as nb FROM reponses', (err, row) => {
-        if (err) return res.status(500).json({ error: 'Erreur DB' });
-        const nb_reponses = row.nb;
+    try {
+        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
+        const nb_reponses = parseInt(result.rows[0].nb, 10);
         const places_restantes = Math.max(0, capacite - nb_reponses);
         res.json({ places_restantes, capacite });
-    });
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur DB' });
+    }
 });
 
 // Page d'accueil (formulaire)
@@ -195,40 +199,41 @@ app.get('/', (req, res) => {
     });
 });
 
-// Création de la base de données SQLite
-const dbPath = path.join(__dirname, 'formulaire.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) return console.error('Erreur ouverture DB:', err.message);
-    console.log('Connecté à la base SQLite.');
+
+// Connexion à PostgreSQL (Supabase)
+const db = new Pool({
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    database: process.env.PGDATABASE,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    ssl: { rejectUnauthorized: false }
 });
 
-db.run(`CREATE TABLE IF NOT EXISTS reponses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    prenom TEXT NOT NULL,
-    email TEXT NOT NULL,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)`);
+db.connect((err, client, release) => {
+    if (err) {
+        return console.error('Erreur connexion PostgreSQL:', err.stack);
+    }
+    console.log('Connecté à PostgreSQL (Supabase)');
+    release();
+});
 
 // Route pour recevoir les réponses du formulaire
-app.post('/api/reponse', (req, res) => {
+app.post('/api/reponse', async (req, res) => {
     const { nom, prenom, email } = req.body;
     if (!nom || !prenom || !email) {
         return res.status(400).json({ error: 'Champs manquants' });
     }
-    // Normalize helper: remove diacritics and lowercase
     function normalize(s) {
         if (!s) return '';
-        // Unicode NFD decomposition
         const decomposed = s.normalize('NFD');
-        // remove combining diacritical marks (U+0300 - U+036F)
         return decomposed.replace(/\p{Diacritic}/gu, '').toLowerCase();
     }
     const nom_n = normalize(nom);
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
-    db.all('SELECT id, nom, prenom, email FROM reponses', [], (err, rows) => {
-        if (err) return res.status(500).json({ error: 'Erreur DB' });
+    try {
+        const { rows } = await db.query('SELECT nom, prenom, email FROM reponses');
         for (const row of rows) {
             const rnom = normalize(row.nom);
             const rprenom = normalize(row.prenom);
@@ -237,13 +242,11 @@ app.post('/api/reponse', (req, res) => {
                 return res.status(409).json({ error: 'Doublon détecté' });
             }
         }
-        db.run('INSERT INTO reponses (nom, prenom, email) VALUES (?, ?, ?)', [nom, prenom, email], function(err) {
-            if (err) {
-                return res.status(500).json({ error: 'Erreur lors de l\'insertion' });
-            }
-            res.json({ success: true, id: this.lastID });
-        });
-    });
+        const insertResult = await db.query('INSERT INTO reponses (nom, prenom, email) VALUES ($1, $2, $3) RETURNING id', [nom, prenom, email]);
+        res.json({ success: true, id: insertResult.rows[0].id });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de l'insertion" });
+    }
 });
 
 app.listen(PORT, () => {
