@@ -1,4 +1,0 @@
-// This file tells Vercel to install dependencies in the backend folder
-{
-  "install": "cd backend && npm install"
-}
