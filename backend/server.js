@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { Pool } = require('pg');
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -9,6 +9,9 @@ const app = express();
 const PORT = 3000;
 
 const templatesPath = path.join(__dirname, 'templates');
+
+// Connexion Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -22,23 +25,40 @@ app.use('/templates', express.static(templatesPath));
 // Capacité stockée dans la base Supabase
 async function getCapacite() {
     try {
-        const result = await db.query('SELECT capacite FROM config ORDER BY id DESC LIMIT 1');
-        return result.rows.length > 0 ? result.rows[0].capacite : 20;
+        const { data, error } = await supabase
+            .from('config')
+            .select('capacite')
+            .order('id', { ascending: false })
+            .limit(1)
+            .single();
+        if (error) throw error;
+        return data && data.capacite ? data.capacite : 20;
     } catch {
         return 20;
     }
 }
 async function setCapacite(val) {
     // Met à jour la capacité dans la table config (remplace la dernière valeur)
-    await db.query('UPDATE config SET capacite = $1 WHERE id = (SELECT id FROM config ORDER BY id DESC LIMIT 1)', [val]);
+    const { data, error } = await supabase
+        .from('config')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .single();
+    if (data && data.id) {
+        await supabase.from('config').update({ capacite: val }).eq('id', data.id);
+    }
 }
 
 // API pour obtenir dynamiquement le nombre de places restantes
 app.get('/api/places_restantes', async (req, res) => {
     try {
         const capacite = await getCapacite();
-        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
-        const nb_reponses = parseInt(result.rows[0].nb, 10);
+        const { data, error } = await supabase
+            .from('reponses')
+            .select('id', { count: 'exact', head: true });
+        if (error) throw error;
+        const nb_reponses = data ? data.length : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
         res.json({ places_restantes, capacite });
     } catch (err) {
@@ -52,8 +72,11 @@ app.get('/', async (req, res) => {
     const fs = require('fs');
     try {
         const capacite = await getCapacite();
-        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
-        const nb_reponses = parseInt(result.rows[0].nb, 10);
+        const { data, error } = await supabase
+            .from('reponses')
+            .select('id', { count: 'exact', head: true });
+        if (error) throw error;
+        const nb_reponses = data ? data.length : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
         let html = fs.readFileSync(path.join(templatesPath, 'index.html'), 'utf8');
         html = html.replace(/\{\{ *places_restantes *\}\}/g, places_restantes)
@@ -118,7 +141,8 @@ app.get('/', async (req, res) => {
 app.post('/reponses/supprimer/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        await db.query('DELETE FROM reponses WHERE id = $1', [id]);
+        const { error } = await supabase.from('reponses').delete().eq('id', id);
+        if (error) throw error;
         res.status(204).send();
     } catch (err) {
         res.status(500).json({ error: 'Erreur DB' });
@@ -141,14 +165,19 @@ app.post('/reponses/modifier/:id', async (req, res) => {
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
     try {
-        const rows = (await db.query('SELECT id, nom, prenom, email FROM reponses')).rows;
+        const { data: rows, error } = await supabase.from('reponses').select('id, nom, prenom, email');
+        if (error) throw error;
         for (const row of rows) {
             if (row.id === id) continue;
             if (normalize(row.nom) === nom_n && normalize(row.prenom) === prenom_n && normalize(row.email) === email_n) {
                 return res.status(409).json({ error: 'Doublon détecté' });
             }
         }
-        await db.query('UPDATE reponses SET nom = $1, prenom = $2, email = $3 WHERE id = $4', [nom, prenom, email, id]);
+        const { error: updateError } = await supabase
+            .from('reponses')
+            .update({ nom, prenom, email })
+            .eq('id', id);
+        if (updateError) throw updateError;
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Erreur DB' });
@@ -184,24 +213,7 @@ app.get('/api/places_restantes', async (req, res) => {
     }
 });
 
-// Connexion à PostgreSQL (Supabase)
-console.log('PGHOST:', process.env.PGHOST);
-const db = new Pool({
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    ssl: { rejectUnauthorized: false }
-});
-
-db.connect((err, client, release) => {
-    if (err) {
-        return console.error('Erreur connexion PostgreSQL:', err.stack);
-    }
-    console.log('Connecté à PostgreSQL (Supabase)');
-    release();
-});
+// (Connexion Supabase déjà faite plus haut)
 
 // Route pour recevoir les réponses du formulaire
 app.post('/api/reponse', async (req, res) => {
@@ -218,7 +230,8 @@ app.post('/api/reponse', async (req, res) => {
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
     try {
-        const { rows } = await db.query('SELECT nom, prenom, email FROM reponses');
+        const { data: rows, error } = await supabase.from('reponses').select('nom, prenom, email');
+        if (error) throw error;
         for (const row of rows) {
             const rnom = normalize(row.nom);
             const rprenom = normalize(row.prenom);
@@ -227,8 +240,12 @@ app.post('/api/reponse', async (req, res) => {
                 return res.status(409).json({ error: 'Doublon détecté' });
             }
         }
-        const insertResult = await db.query('INSERT INTO reponses (nom, prenom, email) VALUES ($1, $2, $3) RETURNING id', [nom, prenom, email]);
-        res.json({ success: true, id: insertResult.rows[0].id });
+        const { data: insertData, error: insertError } = await supabase
+            .from('reponses')
+            .insert([{ nom, prenom, email }])
+            .select();
+        if (insertError) throw insertError;
+        res.json({ success: true, id: insertData && insertData[0] ? insertData[0].id : null });
     } catch (err) {
         res.status(500).json({ error: "Erreur lors de l'insertion" });
     }
