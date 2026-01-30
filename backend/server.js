@@ -80,14 +80,14 @@ app.get('/reponses', async (req, res) => {
 // Capacité stockée dans la base Supabase
 async function getCapacite() {
     try {
-        const { data, error } = await supabase
+        const { data: config, error: repError  } = await supabase
             .from('config')
             .select('capacite')
             .order('id', { ascending: false })
             .limit(1)
             .single();
-        if (error) throw error;
-        return data && data.capacite ? data.capacite : 20;
+        if (repError) throw repError;
+        return config && config.capacite ? config.capacite : 20;
     } catch (err) {
         console.error('Erreur getCapacite:', err);
         return 20;
@@ -95,14 +95,14 @@ async function getCapacite() {
 }
 async function setCapacite(val) {
     // Met à jour la capacité dans la table config (remplace la dernière valeur)
-    const { data, error } = await supabase
+    const { data: config, error: repError } = await supabase
         .from('config')
         .select('id')
         .order('id', { ascending: false })
         .limit(1)
         .single();
-    if (data && data.id) {
-        await supabase.from('config').update({ capacite: val }).eq('id', data.id);
+    if (config && config.id) {
+        await supabase.from('config').update({ capacite: val }).eq('id', config.id);
     }
 }
 
@@ -110,11 +110,11 @@ async function setCapacite(val) {
 app.get('/api/places_restantes', async (req, res) => {
     try {
         const capacite = await getCapacite();
-        const { data, error } = await supabase
+        const { data: reponses, error : repError } = await supabase
             .from('reponses')
             .select('id', { count: 'exact', head: true });
-        if (error) throw error;
-        const nb_reponses = data ? data.length : 0;
+        if (repError) throw repError;
+        const nb_reponses = reponses ? reponses.length : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
         res.json({ places_restantes, capacite, nb_reponses });
     } catch (err) {
@@ -129,11 +129,11 @@ app.get('/', async (req, res) => {
     const fs = require('fs');
     try {
         const capacite = await getCapacite();
-        const { data, error } = await supabase
+        const { data: reponses, error : repError } = await supabase
             .from('reponses')
             .select('id', { count: 'exact', head: true });
-        if (error) throw error;
-        const nb_reponses = data ? data.length : 0;
+        if (repError) throw repError;
+        const nb_reponses = reponses ? reponses.length : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
         let html = fs.readFileSync(path.join(templatesPath, 'index.html'), 'utf8');
         html = html.replace(/\{\{ *places_restantes *\}\}/g, places_restantes)
@@ -169,8 +169,8 @@ app.get('/', async (req, res) => {
 app.post('/reponses/supprimer/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        const { error } = await supabase.from('reponses').delete().eq('id', id);
-        if (error) throw error;
+        const { error: repError } = await supabase.from('reponses').delete().eq('id', id);
+        if (repError) throw repError;
         res.status(204).send();
     } catch (err) {
         res.status(500).json({ error: 'Erreur DB' });
@@ -193,8 +193,8 @@ app.post('/reponses/modifier/:id', async (req, res) => {
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
     try {
-        const { data: rows, error } = await supabase.from('reponses').select('id, nom, prenom, email');
-        if (error) throw error;
+        const { data: rows, error : repError } = await supabase.from('reponses').select('id, nom, prenom, email');
+        if (repError) throw repError;
         for (const row of rows) {
             if (row.id === id) continue;
             if (normalize(row.nom) === nom_n && normalize(row.prenom) === prenom_n && normalize(row.email) === email_n) {
@@ -227,8 +227,8 @@ app.post('/api/reponse', async (req, res) => {
     const prenom_n = normalize(prenom);
     const email_n = normalize(email);
     try {
-        const { data: rows, error } = await supabase.from('reponses').select('nom, prenom, email');
-        if (error) throw error;
+        const { data: rows, error : repError } = await supabase.from('reponses').select('nom, prenom, email');
+        if (repError) throw repError;
         for (const row of rows) {
             const rnom = normalize(row.nom);
             const rprenom = normalize(row.prenom);
