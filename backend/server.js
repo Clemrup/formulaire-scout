@@ -1,3 +1,27 @@
+const express = require('express');
+const cors = require('cors');
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+const PORT = 3000;
+
+const templatesPath = path.join(__dirname, 'templates');
+
+// Connexion Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// Serve static files (CSS, JS) from /static when using the Node server
+app.use(express.static(path.join(__dirname, 'static')));
+
+// Pour servir les templates HTML (index.html, reponses.html)
+app.use('/templates', express.static(templatesPath));
+
 // Route d'administration pour afficher les réponses
 app.get('/reponses', async (req, res) => {
     const fs = require('fs');
@@ -27,29 +51,6 @@ app.get('/reponses', async (req, res) => {
         res.status(500).send('Erreur lors de la récupération des réponses : ' + err.message);
     }
 });
-const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
-const bodyParser = require('body-parser');
-const path = require('path');
-
-const app = express();
-const PORT = 3000;
-
-const templatesPath = path.join(__dirname, 'templates');
-
-// Connexion Supabase
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-// Serve static files (CSS, JS) from /static when using the Node server
-app.use(express.static(path.join(__dirname, 'static')));
-
-// Pour servir les templates HTML (index.html, reponses.html)
-app.use('/templates', express.static(templatesPath));
 
 // Capacité stockée dans la base Supabase
 async function getCapacite() {
