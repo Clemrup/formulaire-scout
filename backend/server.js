@@ -53,8 +53,17 @@ app.get('/reponses', async (req, res) => {
         let lignes = '';
         if (reponses && reponses.length > 0) {
             for (const r of reponses) {
-                lignes += `<tr><td>${r.id}</td><td>${r.nom}</td><td>${r.prenom}</td><td>${r.email}</td><td><!-- Actions ici --></td></tr>`;
-            }
+                lignes += `<tr data-id="${r.id}">
+                            <td>${r.id}</td>
+                            <td class="nom">${r.nom}</td>
+                            <td class="prenom">${r.prenom}</td>
+                            <td class="email">${r.email}</td>
+                            <td>
+                            <button class="edit-btn">Modifier</button>
+                            <button class="delete-btn">Supprimer</button>
+                            </td>
+                            </tr>`;            
+                        }
         }
         // Charge le template HTML
         let html = fs.readFileSync(path.join(templatesPath, 'reponses.html'), 'utf8');

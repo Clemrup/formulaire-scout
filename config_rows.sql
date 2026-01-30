@@ -1,0 +1,1 @@
+INSERT INTO "public"."config" ("id", "capacite") VALUES ('1', '20');
