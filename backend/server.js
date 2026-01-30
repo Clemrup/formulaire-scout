@@ -22,6 +22,21 @@ app.use(express.static(path.join(__dirname, 'static')));
 // Pour servir les templates HTML (index.html, reponses.html)
 app.use('/templates', express.static(templatesPath));
 
+
+// Route POST pour modifier la capacité depuis la page d'administration
+app.post('/reponses', async (req, res) => {
+    const newCap = parseInt(req.body.capacite, 10);
+    if (isNaN(newCap) || newCap < 1) {
+        return res.status(400).send('Capacité invalide');
+    }
+    try {
+        await setCapacite(newCap);
+        res.redirect('/reponses');
+    } catch (err) {
+        res.status(500).send('Erreur lors de la mise à jour de la capacité : ' + err.message);
+    }
+});
+
 // Route d'administration pour afficher les réponses
 app.get('/reponses', async (req, res) => {
     const fs = require('fs');
