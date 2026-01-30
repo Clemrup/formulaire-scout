@@ -67,7 +67,7 @@ app.get('/reponses', async (req, res) => {
         }
         // Charge le template HTML
         let html = fs.readFileSync(path.join(templatesPath, 'reponses.html'), 'utf8');
-        html = html.replace('{{ nb_reponses }}', reponses ? reponses.length : 0)
+        html = html.replace('{{ nb_reponses }}', reponses ? reponses.length : "...")
                    .replace(/\{\{ *capacite *\}\}/g, capacite)
                    .replace('<!-- LIGNES_REPONSES -->', lignes);
         res.send(html);

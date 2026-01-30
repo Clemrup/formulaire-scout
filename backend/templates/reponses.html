@@ -45,7 +45,7 @@
                 const data = await res.json();
                 // Met à jour le nombre de réponses
                 let nbReponsesElem = document.querySelector('.nb-reponses');
-                if (nbReponsesElem && typeof data.nb_reponses !== 'undefined') {
+                if (nbReponsesElem) {
                     nbReponsesElem.textContent = data.nb_reponses;
                 }
                 // Affiche ou masque le message "aucune réponse"
