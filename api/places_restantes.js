@@ -16,11 +16,11 @@ async function getCapacite() {
 module.exports = async (req, res) => {
     try {
         const capacite = await getCapacite();
-        const { data, error } = await supabase
+        const { count, error } = await supabase
             .from('reponses')
             .select('id', { count: 'exact', head: true });
         if (error) throw error;
-        const nb_reponses = data ? data.length : 0;
+        const nb_reponses = typeof count === 'number' ? count : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
         res.status(200).json({ places_restantes, capacite, nb_reponses });
     } catch (err) {
