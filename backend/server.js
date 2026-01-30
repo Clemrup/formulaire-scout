@@ -116,7 +116,7 @@ app.get('/api/places_restantes', async (req, res) => {
         if (error) throw error;
         const nb_reponses = data ? data.length : 0;
         const places_restantes = Math.max(0, capacite - nb_reponses);
-        res.json({ places_restantes, capacite });
+        res.json({ places_restantes, capacite, nb_reponses });
     } catch (err) {
         console.error('Erreur /api/places_restantes:', err);
         res.status(500).json({ error: 'Erreur DB', details: err.message });
