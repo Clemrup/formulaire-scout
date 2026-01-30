@@ -229,21 +229,7 @@ app.post('/reponses/modifier/:id', async (req, res) => {
     }
 });
 
-// ...existing code...
-function getCapacite() {
-    const fs = require('fs');
-    try {
-        const raw = fs.readFileSync(capaciteFile, 'utf8');
-        const data = JSON.parse(raw);
-        return data.capacite || 20;
-    } catch {
-        return 20;
-    }
-}
-function setCapacite(val) {
-    const fs = require('fs');
-    fs.writeFileSync(capaciteFile, JSON.stringify({ capacite: val }, null, 2));
-}
+// (Anciennes fonctions getCapacite/setCapacite supprimées, tout passe par Supabase)
 
 // API pour obtenir dynamiquement le nombre de places restantes
 app.get('/api/places_restantes', async (req, res) => {
