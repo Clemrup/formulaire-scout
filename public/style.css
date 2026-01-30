@@ -1,0 +1,100 @@
+html, body { 
+    height: 100%; 
+}
+        
+body { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+    font-family: Raleway, sans-serif; 
+    background: #2d622b88; 
+    color: #003a5d; 
+    margin: 0; 
+}
+
+/* The container should size to its content; main.content fills remaining space */
+main.content { 
+    flex: 1; 
+    display: flex; 
+    align-items: flex-start; 
+    justify-content: center; 
+}
+.container { 
+    max-width: 400px; 
+    margin: 60px auto; 
+    background: #fff; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 8px #0001; }
+label { 
+    display: block; 
+    margin-top: 15px; 
+}
+input[type="text"], input[type="email"] { 
+    width: 100%; 
+    padding: 8px; 
+    margin-top: 5px; 
+    border-radius: 4px; 
+    border: 1px solid #ccc; 
+}
+button { 
+    margin-top: 10px; 
+    padding: 10px 20px; 
+    background: #2d622b; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    color: #fff
+}
+.success { 
+    color: green; 
+    margin-top: 15px;
+}
+
+/* Footer styling: always at bottom, 10px from viewport bottom */
+footer.site-footer { 
+    text-align: center; 
+    color: #2d622b88; 
+    font-size: 0.95em; 
+    margin: 0 0 10px 0; 
+}
+footer.site-footer button { 
+    background: #2d622b22; 
+    border: none; color: #2d622b88; 
+    font-size: 0.9em; 
+    margin-left: 10px; 
+    cursor: pointer; 
+    border-radius: 15px; 
+    padding: 5px 10px;
+}
+footer.site-footer button:hover {
+    background: #2d622b33; 
+    color: #2d622baa;
+}
+
+
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px;
+}
+th, td { 
+    border: 1px solid #ccc; 
+    padding: 8px; 
+    text-align: left;
+}
+th { 
+    background: #2d622b; 
+    color: #fff; 
+}
+tr:nth-child(even) { 
+    background: #f2f2f2; 
+}
+a { 
+    display: inline-block; 
+    margin-bottom: 10px; 
+    color: #2d622b; 
+    text-decoration: none; 
+}
+.edit-btn, .delete-btn, .save-btn, .cancel-btn { 

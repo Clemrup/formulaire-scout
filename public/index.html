@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire Nom/Prénom</title>
+</head>
+<body>
+    <main class="content">
+    <div class="container">
+        <h2 style="margin-bottom:0;">Formulaire présence</h2>
+        <h3 style="margin-top:0;">Rétro des Compa'venThuriers <br> Le Samedi 11 avril 2026</h3>
+        <div class="places-restantes" style="margin-bottom:10px;">
+            Places restantes : {{ places_restantes }} / {{ capacite }}
+        </div>
+        <!-- Le backend Node.js doit injecter dynamiquement le formulaire ou le message de capacité ici -->
+    </div>
+    </main>
+    
+    <footer class="site-footer">
+        &copy; 2026 Compa'venThuriers. Tous droits réservés.
+        <button id="admin-btn">Admin</button>
+    </footer>
+    <script src="/static/script.js"></script>
+</body>
+</html>
