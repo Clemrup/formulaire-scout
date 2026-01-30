@@ -112,6 +112,7 @@ app.get('/api/places_restantes', async (req, res) => {
     }
 });
 
+
 // Page d'accueil (formulaire)
 app.get('/', async (req, res) => {
     const fs = require('fs');
@@ -150,36 +151,6 @@ app.get('/', async (req, res) => {
     } catch (err) {
         res.status(500).send('Erreur lors de la récupération des données');
     }
-});
-
-// Page admin pour voir les réponses et la capacité
-app.get('/', async (req, res) => {
-    const fs = require('fs');
-    try {
-        const capacite = await getCapacite();
-        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
-        const nb_reponses = parseInt(result.rows[0].nb, 10);
-        const places_restantes = Math.max(0, capacite - nb_reponses);
-        let html = fs.readFileSync(path.join(templatesPath, 'index.html'), 'utf8');
-        html = html.replace(/\{\{ *places_restantes *\}\}/g, places_restantes)
-                   .replace(/\{\{ *capacite *\}\}/g, capacite)
-                   .replace(/\{\{ *nb_reponses *\}\}/g, nb_reponses);
-        let bloc = '';
-        if (places_restantes > 0) {
-            bloc = `
-        <form id=\"formulaire\">\n            <label for=\"nom\">Nom :</label>\n            <input type=\"text\" id=\"nom\" name=\"nom\" required>\n            <label for=\"prenom\">Prénom :</label>\n            <input type=\"text\" id=\"prenom\" name=\"prenom\" required>\n            <label for=\"email\">Adresse e-mail :</label>\n            <input type=\"email\" id=\"email\" name=\"email\" required>\n            <button type=\"submit\">Envoyer</button>\n        </form>\n        <div class=\"success\" id=\"successMsg\" style=\"display:none;\">Réponse enregistrée !</div>\n        <div class=\"error\" id=\"errorMsg\" style=\"display:none; color:red; margin-top:10px;\"></div>\n            `;
-        } else {
-            bloc = `<div style=\"color:red; font-weight:bold;\">⚠️ La capacité maximale est atteinte, il n'est plus possible de s'inscrire.</div>`;
-        }
-        html = html.replace('<!-- Le backend Node.js doit injecter dynamiquement le formulaire ou le message de capacité ici -->', bloc);
-        res.send(html);
-    } catch (err) {
-        console.error('Erreur / (accueil):', err);
-        res.status(500).send('Erreur lors de la récupération des données: ' + err.message);
-    }
-
-    if (!isNaN(newCap)) await setCapacite(newCap);
-    res.redirect('/reponses');
 });
 
 // Supprimer une réponse par son id
@@ -228,23 +199,6 @@ app.post('/reponses/modifier/:id', async (req, res) => {
         res.status(500).json({ error: 'Erreur DB' });
     }
 });
-
-// (Anciennes fonctions getCapacite/setCapacite supprimées, tout passe par Supabase)
-
-// API pour obtenir dynamiquement le nombre de places restantes
-app.get('/api/places_restantes', async (req, res) => {
-    const capacite = getCapacite();
-    try {
-        const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
-        const nb_reponses = parseInt(result.rows[0].nb, 10);
-        const places_restantes = Math.max(0, capacite - nb_reponses);
-        res.json({ places_restantes, capacite });
-    } catch (err) {
-        res.status(500).json({ error: 'Erreur DB' });
-    }
-});
-
-// (Connexion Supabase déjà faite plus haut)
 
 // Route pour recevoir les réponses du formulaire
 app.post('/api/reponse', async (req, res) => {
