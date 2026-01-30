@@ -10,12 +10,12 @@
         <a href="/">← Retour au formulaire</a>
         <h2>Administration - Gestion des réponses</h2>
         <div style="margin-bottom: 20px;">
-            <strong>Nombre de réponses :</strong> <span class="nb-reponses">{{ nb_reponses }}</span><br>
-            <strong>Capacité maximale :</strong> {{ capacite }}<br>
+            <strong>Nombre de réponses :</strong> <span class="nb-reponses">...</span><br>
+            <strong>Capacité maximale :</strong> <span class="capacite">...</span><br>
             <form method="post" style="display:inline; margin-top:10px;">
                 <button type="button" id="toggle-capacite">Modifier la capacité</button>
                 <span id="capacite-controls" style="display:none; margin-left:8px;">
-                    <input type="number" name="capacite" id="capacite" min="1" value="{{ capacite }}">
+                    <input type="number" name="capacite" id="capacite" min="1" value="1">
                     <button type="submit">Enregistrer</button>
                 </span>
             </form>
