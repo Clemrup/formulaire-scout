@@ -46,7 +46,12 @@
                 // Met à jour le nombre de réponses
                 let nbReponsesElem = document.querySelector('.nb-reponses');
                 if (nbReponsesElem) {
-                    nbReponsesElem.textContent = data.capacite - data.places_restantes;
+                    // Si l'API renvoie nb_reponses, l'utiliser, sinon calculer
+                    if (typeof data.nb_reponses !== 'undefined') {
+                        nbReponsesElem.textContent = data.nb_reponses;
+                    } else {
+                        nbReponsesElem.textContent = data.capacite - data.places_restantes;
+                    }
                 }
                 // Affiche ou masque le message "aucune réponse"
                 const table = document.getElementById('reponsesTable');
@@ -75,7 +80,7 @@
                 const id = tr.getAttribute('data-id');
                 await fetch(`/reponses/supprimer/${id}`, { method: 'POST' });
                 tr.remove();
-                await updateInfos();
+                await updateInfos(); // <-- met à jour l'affichage dynamique
             });
         });
         // Edition
@@ -143,7 +148,7 @@
                         btn.style.display = '';
                         saveBtn.remove();
                         cancelBtn.remove();
-                        await updateInfos();
+                        await updateInfos(); // <-- met à jour l'affichage dynamique
                     } else {
                         alert('Erreur lors de la modification');
                     }
