@@ -185,6 +185,7 @@ app.get('/api/places_restantes', async (req, res) => {
 });
 
 // Connexion à PostgreSQL (Supabase)
+console.log('PGHOST:', process.env.PGHOST);
 const db = new Pool({
     host: process.env.PGHOST,
     port: process.env.PGPORT,
