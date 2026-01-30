@@ -63,6 +63,7 @@ app.get('/reponses', async (req, res) => {
                    .replace('<!-- LIGNES_REPONSES -->', lignes);
         res.send(html);
     } catch (err) {
+        console.error('Erreur lors de la récupération des réponses :', err);
         res.status(500).send('Erreur lors de la récupération des réponses : ' + err.message);
     }
 });
@@ -78,7 +79,8 @@ async function getCapacite() {
             .single();
         if (error) throw error;
         return data && data.capacite ? data.capacite : 20;
-    } catch {
+    } catch (err) {
+        console.error('Erreur getCapacite:', err);
         return 20;
     }
 }
@@ -149,6 +151,7 @@ app.get('/', async (req, res) => {
         html = html.replace('<!-- Le backend Node.js doit injecter dynamiquement le formulaire ou le message de capacité ici -->', bloc);
         res.send(html);
     } catch (err) {
+        console.error('Erreur page accueil / :', err);
         res.status(500).send('Erreur lors de la récupération des données');
     }
 });
@@ -232,6 +235,7 @@ app.post('/api/reponse', async (req, res) => {
         if (insertError) throw insertError;
         res.json({ success: true, id: insertData && insertData[0] ? insertData[0].id : null });
     } catch (err) {
+        console.error('Erreur insertion /api/reponse :', err);
         res.status(500).json({ error: "Erreur lors de l'insertion" });
     }
 });
