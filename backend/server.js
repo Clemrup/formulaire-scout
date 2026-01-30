@@ -9,7 +9,6 @@ const app = express();
 const PORT = 3000;
 
 const templatesPath = path.join(__dirname, 'templates');
-const capaciteFile = path.join(__dirname, 'capacite.json');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,24 +19,24 @@ app.use(express.static(path.join(__dirname, 'static')));
 // Pour servir les templates HTML (index.html, reponses.html)
 app.use('/templates', express.static(templatesPath));
 
-// Gestion capacité (capacite.json)
-function getCapacite() {
+// Capacité stockée dans la base Supabase
+async function getCapacite() {
     try {
-        const data = require(capaciteFile);
-        return data.capacite || 20;
+        const result = await db.query('SELECT capacite FROM config ORDER BY id DESC LIMIT 1');
+        return result.rows.length > 0 ? result.rows[0].capacite : 20;
     } catch {
         return 20;
     }
 }
-function setCapacite(val) {
-    const fs = require('fs');
-    fs.writeFileSync(capaciteFile, JSON.stringify({ capacite: val }, null, 2));
+async function setCapacite(val) {
+    // Met à jour la capacité dans la table config (remplace la dernière valeur)
+    await db.query('UPDATE config SET capacite = $1 WHERE id = (SELECT id FROM config ORDER BY id DESC LIMIT 1)', [val]);
 }
 
 // API pour obtenir dynamiquement le nombre de places restantes
 app.get('/api/places_restantes', async (req, res) => {
-    const capacite = getCapacite();
     try {
+        const capacite = await getCapacite();
         const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
         const nb_reponses = parseInt(result.rows[0].nb, 10);
         const places_restantes = Math.max(0, capacite - nb_reponses);
@@ -50,8 +49,8 @@ app.get('/api/places_restantes', async (req, res) => {
 // Page d'accueil (formulaire)
 app.get('/', async (req, res) => {
     const fs = require('fs');
-    const capacite = getCapacite();
     try {
+        const capacite = await getCapacite();
         const result = await db.query('SELECT COUNT(*) as nb FROM reponses');
         const nb_reponses = parseInt(result.rows[0].nb, 10);
         const places_restantes = Math.max(0, capacite - nb_reponses);
@@ -107,9 +106,9 @@ app.get('/reponses', async (req, res) => {
 });
 
 // Modifier la capacité (POST depuis admin)
-app.post('/reponses', (req, res) => {
+app.post('/reponses', async (req, res) => {
     const newCap = parseInt(req.body.capacite);
-    if (!isNaN(newCap)) setCapacite(newCap);
+    if (!isNaN(newCap)) await setCapacite(newCap);
     res.redirect('/reponses');
 });
 
