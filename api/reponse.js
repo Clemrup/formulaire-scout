@@ -54,23 +54,32 @@ module.exports = async (req, res) => {
             await transporter.sendMail({
                 from: 'lescompaventhuriers@gmail.com',
                 to: email,
-                subject: 'Confirmation de votre inscription',
+                subject: 'Confirmation de votre inscription pour la rétro des Compa\'venthuriers',
                 html: `
                     <h2 style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 24px;">
                         Bonjour ${prenom} ${nom},
                     </h2>
                     <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
-                        Merci, votre inscription a bien été prise en compte !
-                    </p>
-                    <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
+                        Merci pour votre inscription à la rétro des Compa\'venthuriers!
+                        <br>
+                        Nous vous confirmons que votre présence est bien enregistrée.
+                        <br>
+                        Nous avons hâte de vous retrouver, voici les quelques informations importantes:
+                        <br>
+                        <ul>
+                            <li><strong style="font-weight: bold;">Date :</strong> 11 avril 2026</li>
+                            <li><strong style="font-weight: bold;">Lieu :</strong> Relay Culturel de Thann</li>
+                            <li><strong style="font-weight: bold;">Horaire :</strong> 18h00</li>
+                        </ul>
+                        <br>
+                        N'hésitez pas à nous contacter si vous avez des questions ou des besoins particuliers.
+                        <br>
+                        <br>
                         À bientôt !
+                        <br>
+                        Les Compas'venthuriers,
                     </p>
-                    <br>
-                    <br>
-                    <p style="font-family: Raleway, Arial, sans-serif; color: #2d622b; font-size: 16px;">
-                        Les Compas Venthuriers,
-                    </p>
-                    <img src="cid:logoimg" alt="Signature" style="height: 200px; width: auto;" />`
+                    <img src="/images/signature.png" alt="Signature" style="height: 200px; width: auto;" />`
             });
         } catch (mailErr) {
             // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
