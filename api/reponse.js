@@ -1,4 +1,4 @@
-
+const path = require('path');
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
 // Configurer le transporteur Nodemailer (exemple Gmail)
@@ -67,9 +67,11 @@ module.exports = async (req, res) => {
                         <br>
                         Voici les quelques informations importantes:
                         <br>
-                        <strong style="font-weight: bold;">   - Date :</strong> 11 avril 2026
-                        <strong style="font-weight: bold;">   - Lieu :</strong> Relay Culturel de Thann
-                        <strong style="font-weight: bold;">   - Horaire :</strong> 18h00
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Date :</strong> 11 avril 2026
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Lieu :</strong> Relay Culturel de Thann
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Horaire :</strong> 18h00
                         <br>
                         <br>
                         <br>
@@ -80,7 +82,14 @@ module.exports = async (req, res) => {
                         <br>
                         Les Compas'venthuriers,
                     </p>
-                    <img src="/images/signature.png" alt="Signature" style="height: 200px; width: auto;" />`
+                    <img src="cid:logoimg" alt="Signature" style="height: 200px; width: auto;" />`,
+                attachments: [
+                    {
+                      filename: 'signature-mail.png',
+                      path: path.join(__dirname, '../public/static/images/signature-mail.png'),
+                      cid: 'logoimg'
+                    }
+                ]
             });
         } catch (mailErr) {
             // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
