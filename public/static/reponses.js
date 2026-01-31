@@ -92,13 +92,13 @@ function attachActionListeners() {
             const oldEmail = emailTd ? emailTd.textContent : '';
             const nomInput = document.createElement('input');
             nomInput.type = 'text';
-            nomInput.style.width = '90%';
+            nomInput.style.width = 'calc(100% - 8px)';
             nomInput.value = oldNom;
             nomTd.textContent = '';
             nomTd.appendChild(nomInput);
             const prenomInput = document.createElement('input');
             prenomInput.type = 'text';
-            prenomInput.style.width = '90%';
+            prenomInput.style.width = 'calc(100% - 8px)';
             prenomInput.value = oldPrenom;
             prenomTd.textContent = '';
             prenomTd.appendChild(prenomInput);
@@ -106,7 +106,7 @@ function attachActionListeners() {
             if (emailTd) {
                 emailInput = document.createElement('input');
                 emailInput.type = 'email';
-                emailInput.style.width = '90%';
+                emailInput.style.width = 'calc(100% - 8px)';
                 emailInput.value = oldEmail;
                 emailTd.textContent = '';
                 emailTd.appendChild(emailInput);
@@ -123,6 +123,7 @@ function attachActionListeners() {
             cancelBtn.onclick = function() {
                 nomTd.textContent = oldNom;
                 prenomTd.textContent = oldPrenom;
+                emailTd.textContent = oldEmail;
                 btn.style.display = '';
                 saveBtn.remove();
                 cancelBtn.remove();
