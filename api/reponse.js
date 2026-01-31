@@ -82,7 +82,7 @@ module.exports = async (req, res) => {
                         <br>
                         Les Compas'venthuriers,
                     </p>
-                    <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature" style="height: 200px; width: auto;" />`,
+                    <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature" style="height: 100px; width: auto;" />`,
             });
         } catch (mailErr) {
             // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
