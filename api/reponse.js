@@ -1,4 +1,14 @@
+
+const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
+// Configurer le transporteur Nodemailer (exemple Gmail)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'lescompaventhuriers@gmail.com',
+        pass: 'novi cjym kpjn gpyl' // mot de passe d'application
+    }
+});
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
@@ -28,7 +38,7 @@ module.exports = async (req, res) => {
             const rnom = normalize(row.nom);
             const rprenom = normalize(row.prenom);
             const remail = normalize(row.email);
-            if (rnom === nom_n && rprenom === prenom_n && remail === email_n) {
+            if (rnom === nom_n && rprenom === prenom_n) {
                 res.status(409).json({ error: 'Doublon détecté' });
                 return;
             }
@@ -38,6 +48,35 @@ module.exports = async (req, res) => {
             .insert([{ nom, prenom, email }])
             .select();
         if (insertError) throw insertError;
+
+        // Envoi du mail de confirmation après l'enregistrement
+        try {
+            await transporter.sendMail({
+                from: 'lescompaventhuriers@gmail.com',
+                to: email,
+                subject: 'Confirmation de votre inscription',
+                html: `
+                    <h2 style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 24px;">
+                        Bonjour ${prenom} ${nom},
+                    </h2>
+                    <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
+                        Merci, votre inscription a bien été prise en compte !
+                    </p>
+                    <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
+                        À bientôt !
+                    </p>
+                    <br>
+                    <br>
+                    <p style="font-family: Raleway, Arial, sans-serif; color: #2d622b; font-size: 16px;">
+                        Les Compas Venthuriers,
+                    </p>
+                    <img src="cid:logoimg" alt="Signature" style="height: 200px; width: auto;" />`
+            });
+        } catch (mailErr) {
+            // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
+            console.error('Erreur lors de l\'envoi du mail :', mailErr);
+        }
+
         res.status(200).json({ success: true, id: insertData && insertData[0] ? insertData[0].id : null });
     } catch (err) {
         res.status(500).json({ error: "Erreur lors de l'insertion" });

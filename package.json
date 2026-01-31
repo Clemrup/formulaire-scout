@@ -4,6 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "nodemailer": "^7.0.13"
   }
 }
