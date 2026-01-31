@@ -60,17 +60,18 @@ module.exports = async (req, res) => {
                         Bonjour ${prenom} ${nom},
                     </h2>
                     <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
-                        Merci pour votre inscription à la rétro des Compa\'venthuriers!
+                        Merci pour votre inscription à la rétro des Compa\'venthuriers ! 
                         <br>
-                        Nous vous confirmons que votre présence est bien enregistrée.
+                        Nous vous confirmons que votre présence est bien enregistrée, nous avons hâte de vous retrouver !!
                         <br>
-                        Nous avons hâte de vous retrouver, voici les quelques informations importantes:
                         <br>
-                        <ul>
-                            <li><strong style="font-weight: bold;">Date :</strong> 11 avril 2026</li>
-                            <li><strong style="font-weight: bold;">Lieu :</strong> Relay Culturel de Thann</li>
-                            <li><strong style="font-weight: bold;">Horaire :</strong> 18h00</li>
-                        </ul>
+                        Voici les quelques informations importantes:
+                        <br>
+                        <strong style="font-weight: bold;">   - Date :</strong> 11 avril 2026
+                        <strong style="font-weight: bold;">   - Lieu :</strong> Relay Culturel de Thann
+                        <strong style="font-weight: bold;">   - Horaire :</strong> 18h00
+                        <br>
+                        <br>
                         <br>
                         N'hésitez pas à nous contacter si vous avez des questions ou des besoins particuliers.
                         <br>
