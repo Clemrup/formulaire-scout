@@ -82,14 +82,7 @@ module.exports = async (req, res) => {
                         <br>
                         Les Compas'venthuriers,
                     </p>
-                    <img src="cid:logoimg" alt="Signature" style="height: 200px; width: auto;" />`,
-                attachments: [
-                    {
-                      filename: 'signature-mail.png',
-                      path: path.join(__dirname, '../public/static/images/signature-mail.png'),
-                      cid: 'logoimg'
-                    }
-                ]
+                    <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature" style="height: 200px; width: auto;" />`,
             });
         } catch (mailErr) {
             // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
