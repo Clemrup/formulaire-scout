@@ -40,11 +40,11 @@ async function loadReponses() {
         const { reponses } = await res.json();
         if (reponses && reponses.length > 0) {
             msg.style.display = 'none';
-            for (const rep of reponses) {
+            for (const [index, rep] of reponses.entries()) {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', rep.id);
                 tr.innerHTML = `
-                    <td>${rep.id}</td>
+                    <td>${index + 1}</td>
                     <td class="nom">${rep.nom}</td>
                     <td class="prenom">${rep.prenom}</td>
                     <td class="email">${rep.email || ''}</td>
