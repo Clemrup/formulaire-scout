@@ -109,6 +109,6 @@ a {
     color: #fff; 
     background: #2d622b;
 }
-.edit-btn:hover, .delete-btn:hover, .save-btn:hover, .cancel-btn:hover {
-    transform: scale(1.2);
+button:hover {
+    transform: scale(1.1);
 }
