@@ -59,13 +59,16 @@ module.exports = async (req, res) => {
                     <h2 style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 24px;">
                         Bonjour ${prenom},
                     </h2>
+
                     <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
+                        <strong>Inscription confirmée 🎉</strong>
+                        <br>
                         Merci pour votre inscription à la rétro des Compa'venthuriers !
                         <br>
                         Nous vous confirmons que votre présence est bien enregistrée, et nous avons hâte de vous retrouver 😊
                         <br><br>
-                                
-                        Voici quelques informations importantes :
+
+                        <strong>📅 Informations pratiques</strong>
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
                         <br>
@@ -74,17 +77,21 @@ module.exports = async (req, res) => {
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
                         <br><br>
-                                
+
+                        <strong>🍽️ Sur place</strong>
+                        <br>
                         Nous avons prévu de quoi manger et boire sur place, 
                         mais n'hésitez pas à venir avec votre bonne humeur et votre sourire !
-                        <br><br>
-                                
+                        <br><br>                    
+
+                        <strong>📩 Et la suite ?</strong>
+                        <br>
                         Nous vous enverrons prochainement un mail avec plus de détails sur le lieu et le déroulement de la soirée.
                         <br>
                         N'hésitez pas à nous contacter si vous avez des questions ou des besoins particuliers.
                         <br><br>
-                                
-                        À bientôt !
+
+                        <strong>À très bientôt !</strong>
                         <br>
                         Les Compas'venthuriers
                     </p>
