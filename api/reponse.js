@@ -72,8 +72,8 @@ module.exports = async (req, res) => {
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
                         <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu :</strong> Nous attendons actuellement la confirmation du lieu. 
-                        Vous recevrez prochainement un mail avec cette information.
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu :</strong> (Nous attendons actuellement la confirmation du lieu, mais
+                        vous recevrez prochainement un mail avec cette information.)
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
                         <br><br>
