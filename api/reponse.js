@@ -57,30 +57,36 @@ module.exports = async (req, res) => {
                 subject: 'Confirmation de votre inscription pour la rétro des Compa\'venthuriers',
                 html: `
                     <h2 style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 24px;">
-                        Bonjour ${prenom} ${nom},
+                        Bonjour ${prenom},
                     </h2>
                     <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
-                        Merci pour votre inscription à la rétro des Compa\'venthuriers ! 
+                        Merci pour votre inscription à la rétro des Compa'venthuriers !
                         <br>
-                        Nous vous confirmons que votre présence est bien enregistrée, nous avons hâte de vous retrouver !!
+                        Nous vous confirmons que votre présence est bien enregistrée, et nous avons hâte de vous retrouver 😊
+                        <br><br>
+                                
+                        Voici quelques informations importantes :
                         <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
                         <br>
-                        Voici les quelques informations importantes:
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu :</strong> Nous attendons actuellement la confirmation du lieu. 
+                        Vous recevrez prochainement un mail avec cette information.
                         <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Date :</strong> 11 avril 2026
-                        <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Lieu :</strong> Relay Culturel de Thann
-                        <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong style="font-weight: bold;">- Horaire :</strong> 18h00
-                        <br>
-                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
+                        <br><br>
+                                
+                        Nous avons prévu de quoi manger et boire sur place, 
+                        mais n'hésitez pas à venir avec votre bonne humeur et votre sourire !
+                        <br><br>
+                                
+                        Nous vous enverrons prochainement un mail avec plus de détails sur le lieu et le déroulement de la soirée.
                         <br>
                         N'hésitez pas à nous contacter si vous avez des questions ou des besoins particuliers.
-                        <br>
-                        <br>
+                        <br><br>
+                                
                         À bientôt !
                         <br>
-                        Les Compas'venthuriers,
+                        Les Compas'venthuriers
                     </p>
                     <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature" style="height: 125px; width: auto;" />`,
             });
