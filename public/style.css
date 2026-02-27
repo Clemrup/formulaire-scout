@@ -19,14 +19,16 @@ main.content {
     align-items: flex-start; 
     justify-content: center; 
 }
-.container { 
-    max-width: 500px; 
-    margin: 60px auto; 
-    background: #fff; 
-    padding: 30px; 
-    border-radius: 8px; 
-    box-shadow: 0 2px 8px #0001; 
-    overflow: hidden;
+.container {
+    max-width: 90vw;
+    max-height: 80vh;
+    margin: 60px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px #0001;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 label { 
@@ -77,10 +79,17 @@ footer.site-footer button:hover {
 
 
 
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
+/* Permettre au tableau de dépasser horizontalement si besoin */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
     margin-top: 20px;
+}
+table {
+    min-width: 600px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
 }
 th, td { 
     border: 1px solid #ccc; 
