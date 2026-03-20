@@ -20,6 +20,8 @@
                 </span>
             </form>
             <button type="button" id="btn-export-emails" style="margin-left: 20px; padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">📧 Exporter emails uniques</button>
+            <button type="button" id="btn-select-all" style="margin-left: 10px; padding: 8px 15px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">✓ Sélectionner tout</button>
+            <button type="button" id="btn-send-email" style="margin-left: 10px; padding: 8px 15px; background-color: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer;">📨 Envoyer email du lieu</button>
         </div>
 
         <!-- Message dynamique pour la limite (géré par JS) -->
@@ -27,6 +29,7 @@
         <div class="table-responsive">
             <table id="reponsesTable">
                 <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="select-all-checkbox"></th>
                     <th>ID</th>
                     <th>Nom</th>
                     <th>Prénom</th>
@@ -40,7 +43,31 @@
         <!-- Message dynamique pour aucune réponse (géré par JS) -->
         <p class="aucune-reponse" style="display:none;">Aucune réponse enregistrée pour le moment.</p>
     </div>
-
+    <div id="modal-selected-emails" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); z-index:1000;">
+        <div style="background-color:white; margin:5% auto; padding:20px; border-radius:8px; width:80%; max-height:80vh; overflow-y:auto; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0;">Destinataires sélectionnés (<span id="count-selected">0</span>)</h3>
+                <button id="close-modal-selected" type="button" style="background:none; border:none; font-size:24px; cursor:pointer;">×</button>
+            </div>
+            <div style="margin-bottom:10px;">
+                <button id="copy-selected-emails" type="button" style="padding:8px 15px; background-color:#2196F3; color:white; border:none; border-radius:4px; cursor:pointer; margin-right:10px;">📋 Copier tous</button>
+                <button id="download-selected-emails" type="button" style="padding:8px 15px; background-color:#FF9800; color:white; border:none; border-radius:4px; cursor:pointer; margin-right:10px;">⬇️ Télécharger</button>
+                <button id="open-email-client" type="button" style="padding:8px 15px; background-color:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">✉️ Ouvrir dans Gmail</button>
+            </div>
+            <p style="font-size: 0.9em; color: #666; margin: 10px 0;">💡 <strong>Astuce :</strong> Copie les emails et colle-les dans ton client mail</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+                <thead>
+                    <tr style="background-color:#f2f2f2; border-bottom:2px solid #ddd;">
+                        <th style="padding:10px; text-align:left;">#</th>
+                        <th style="padding:10px; text-align:left;">Email</th>
+                    </tr>
+                </thead>
+                <tbody id="selected-emails-list">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
     <!-- Modal pour afficher les emails uniques -->
     <div id="modal-emails" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); z-index:1000;">
         <div style="background-color:white; margin:5% auto; padding:20px; border-radius:8px; width:80%; max-height:80vh; overflow-y:auto; box-shadow:0 4px 8px rgba(0,0,0,0.2);">

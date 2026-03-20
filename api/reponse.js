@@ -72,8 +72,7 @@ module.exports = async (req, res) => {
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
                         <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu :</strong> (Nous attendons actuellement la confirmation du lieu, mais
-                        vous recevrez prochainement un mail avec cette information.)
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu : <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank">CSRA à Mulhouse (5 Rue des Frères Lumière, Mulhouse)</a></strong>
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
                         <br><br>
@@ -83,14 +82,6 @@ module.exports = async (req, res) => {
                         Nous avons prévu de quoi manger et boire sur place, 
                         mais n'hésitez pas à venir avec votre bonne humeur et votre sourire !
                         <br><br>                    
-
-                        <strong>📩 Et la suite ?</strong>
-                        <br>
-                        Nous vous enverrons prochainement un mail avec plus de détails sur le lieu et le déroulement de la soirée.
-                        <br>
-                        N'hésitez pas à nous contacter si vous avez des questions ou des besoins particuliers.
-                        <br><br>
-
                         <strong>À très bientôt !</strong>
                         <br>
                         Les Compas'venthuriers

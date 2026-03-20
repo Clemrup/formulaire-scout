@@ -29,7 +29,6 @@ async function updateInfos() {
         }
     }
 }
-// Fonction pour charger et afficher dynamiquement les réponses
 async function loadReponses() {
     const table = document.getElementById('reponsesTable');
     const msg = document.querySelector('.aucune-reponse');
@@ -44,6 +43,7 @@ async function loadReponses() {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', rep.id);
                 tr.innerHTML = `
+                    <td style="text-align: center;"><input type="checkbox" class="row-checkbox" data-email="${rep.email || ''}"></td>
                     <td>${index + 1}</td>
                     <td class="nom">${rep.nom}</td>
                     <td class="prenom">${rep.prenom}</td>
@@ -370,5 +370,130 @@ if (downloadEmailsBtn) {
 window.addEventListener('click', (event) => {
     if (event.target === modalEmails) {
         modalEmails.style.display = 'none';
+    }
+});
+
+// ===== GESTION DE LA SÉLECTION DES EMAILS POUR L'ENVOI =====
+
+const btnSelectAll = document.getElementById('btn-select-all');
+const btnSendEmail = document.getElementById('btn-send-email');
+const selectAllCheckbox = document.getElementById('select-all-checkbox');
+const modalSelectedEmails = document.getElementById('modal-selected-emails');
+const closeModalSelectedBtn = document.getElementById('close-modal-selected');
+const copySelectedEmailsBtn = document.getElementById('copy-selected-emails');
+const downloadSelectedEmailsBtn = document.getElementById('download-selected-emails');
+const openEmailClientBtn = document.getElementById('open-email-client');
+const selectedEmailsList = document.getElementById('selected-emails-list');
+const countSelected = document.getElementById('count-selected');
+
+// Gérer le "Sélectionner tout"
+if (btnSelectAll) {
+    btnSelectAll.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = !allChecked;
+        }
+    });
+}
+
+// Synchro du checkbox "tout sélectionner"
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+}
+
+// Bouton "Envoyer email du lieu"
+if (btnSendEmail) {
+    btnSendEmail.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Veuillez sélectionner au moins une personne');
+            return;
+        }
+        
+        // Récupérer les emails sélectionnés
+        const emailsArray = Array.from(checkboxes)
+            .map(cb => cb.getAttribute('data-email'))
+            .filter(email => email && email.trim());
+        
+        // Remplir le tableau du modal
+        selectedEmailsList.innerHTML = '';
+        emailsArray.forEach((email, index) => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #ddd';
+            tr.innerHTML = `
+                <td style="padding:10px; text-align:center;">${index + 1}</td>
+                <td style="padding:10px;">${email}</td>
+            `;
+            selectedEmailsList.appendChild(tr);
+        });
+        
+        countSelected.textContent = emailsArray.length;
+        
+        // Stocker les emails sélectionnés
+        window.selectedEmails = emailsArray;
+        
+        // Afficher le modal
+        modalSelectedEmails.style.display = 'block';
+    });
+}
+
+if (closeModalSelectedBtn) {
+    closeModalSelectedBtn.addEventListener('click', () => {
+        modalSelectedEmails.style.display = 'none';
+    });
+}
+
+if (copySelectedEmailsBtn) {
+    copySelectedEmailsBtn.addEventListener('click', () => {
+        if (window.selectedEmails && window.selectedEmails.length > 0) {
+            const text = window.selectedEmails.join(', ');
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copySelectedEmailsBtn.textContent;
+                copySelectedEmailsBtn.textContent = '✓ Copié !';
+                setTimeout(() => {
+                    copySelectedEmailsBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
+    });
+}
+
+if (downloadSelectedEmailsBtn) {
+    downloadSelectedEmailsBtn.addEventListener('click', () => {
+        if (window.selectedEmails && window.selectedEmails.length > 0) {
+            const csv = window.selectedEmails.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'emails_destinataires.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+}
+
+if (openEmailClientBtn) {
+    openEmailClientBtn.addEventListener('click', () => {
+        if (window.selectedEmails && window.selectedEmails.length > 0) {
+            const emailsString = window.selectedEmails.join(', ');
+            const subject = 'Le lieu de la rétro des Compa\'venthuriers';
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailsString)}&su=${encodeURIComponent(subject)}`;
+            window.open(gmailUrl, '_blank');
+        }
+    });
+}
+
+// Fermer le modal en cliquant en dehors
+window.addEventListener('click', (event) => {
+    if (event.target === modalSelectedEmails) {
+        modalSelectedEmails.style.display = 'none';
     }
 });
