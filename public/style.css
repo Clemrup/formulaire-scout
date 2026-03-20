@@ -121,3 +121,37 @@ a {
 button:hover {
     transform: scale(1.1);
 }
+
+/* Styles pour la section vidéo YouTube */
+.video-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #2d622b;
+}
+
+.video-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2d622b;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #000;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
