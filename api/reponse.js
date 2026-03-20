@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
                         <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu : <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank">CSRA à Mulhouse (5 Rue des Frères Lumière, Mulhouse)</a></strong>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu : <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank" rel="noopener noreferrer"">CSRA à Mulhouse (5 Rue des Frères Lumière, Mulhouse)</a></strong>
                         <br>
                         &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
                         <br><br>
