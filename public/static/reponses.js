@@ -153,90 +153,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     await updateInfos();
     await loadReponses();
 });
-// Suppression
-Array.from(document.querySelectorAll('.delete-btn')).forEach(btn => {
-    btn.addEventListener('click', async function() {
-        if (!confirm('Supprimer cette réponse ?')) return;
-        const tr = this.closest('tr');
-        const id = tr.getAttribute('data-id');
-        await fetch('/api/reponses_supprimer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        tr.remove();
-        await updateInfos();
-    });
-});
-// Edition
-Array.from(document.querySelectorAll('.edit-btn')).forEach(btn => {
-    btn.addEventListener('click', function() {
-        const tr = this.closest('tr');
-        const nomTd = tr.querySelector('.nom');
-        const prenomTd = tr.querySelector('.prenom');
-        const emailTd = tr.querySelector('.email');
-        const oldNom = nomTd.textContent;
-        const oldPrenom = prenomTd.textContent;
-        const oldEmail = emailTd ? emailTd.textContent : '';
-        const nomInput = document.createElement('input');
-        nomInput.type = 'text';
-        nomInput.value = oldNom;
-        nomTd.textContent = '';
-        nomTd.appendChild(nomInput);
-        const prenomInput = document.createElement('input');
-        prenomInput.type = 'text';
-        prenomInput.value = oldPrenom;
-        prenomTd.textContent = '';
-        prenomTd.appendChild(prenomInput);
-        let emailInput = null;
-        if (emailTd) {
-            emailInput = document.createElement('input');
-            emailInput.type = 'email';
-            emailInput.value = oldEmail;
-            emailTd.textContent = '';
-            emailTd.appendChild(emailInput);
-        }
-        this.style.display = 'none';
-        const saveBtn = document.createElement('button');
-        saveBtn.textContent = 'Enregistrer';
-        saveBtn.className = 'save-btn';
-        const cancelBtn = document.createElement('button');
-        cancelBtn.textContent = 'Annuler';
-        cancelBtn.className = 'cancel-btn';
-        this.parentNode.appendChild(saveBtn);
-        this.parentNode.appendChild(cancelBtn);
-        cancelBtn.addEventListener('click', function() {
-            nomTd.textContent = oldNom;
-            prenomTd.textContent = oldPrenom;
-            btn.style.display = '';
-            saveBtn.remove();
-            cancelBtn.remove();
-        });
-        saveBtn.addEventListener('click', async function() {
-            const newNom = nomTd.querySelector('input').value;
-            const newPrenom = prenomTd.querySelector('input').value;
-            const newEmail = emailTd ? (emailTd.querySelector('input') ? emailTd.querySelector('input').value : '') : '';
-            const id = tr.getAttribute('data-id');
-            const payload = { id, nom: newNom, prenom: newPrenom, email: newEmail };
-            const res = await fetch('/api/reponses_modifier', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-                nomTd.textContent = newNom;
-                prenomTd.textContent = newPrenom;
-                emailTd.textContent = newEmail;
-                btn.style.display = '';
-                saveBtn.remove();
-                cancelBtn.remove();
-                await updateInfos();
-            } else {
-                alert('Erreur lors de la modification');
-            }
-        });
-    });
-});
+
 // Toggle capacity input visibility
 const toggleBtn = document.getElementById('toggle-capacite');
 const capaciteControls = document.getElementById('capacite-controls');
@@ -372,6 +289,10 @@ if (sendSelectedFromUnique) {
             .map(cb => cb.getAttribute('data-email'))
             .filter(email => email && email.trim());
         
+        // Confirmation avec nombre de destinataires
+        const confirmSend = confirm(`Êtes-vous sûr de vouloir envoyer l'email du lieu à ${emailsArray.length} destinataire(s) ?`);
+        if (!confirmSend) return;
+        
         displaySelectedEmails(emailsArray);
     });
 }
@@ -457,7 +378,7 @@ if (closeModalSelectedBtn) {
 if (copySelectedEmailsBtn) {
     copySelectedEmailsBtn.addEventListener('click', () => {
         if (window.selectedEmails && window.selectedEmails.length > 0) {
-            const text = window.selectedEmails.join(', ');
+            const text = window.selectedEmails.join('\n');
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = copySelectedEmailsBtn.textContent;
                 copySelectedEmailsBtn.textContent = '✓ Copié !';
