@@ -277,3 +277,98 @@ if (saveCapaciteBtn) {
         }
     });
 }
+
+// Gestion de l'export des emails uniques
+const btnExportEmails = document.getElementById('btn-export-emails');
+const modalEmails = document.getElementById('modal-emails');
+const closeModalBtn = document.getElementById('close-modal');
+const copyEmailsBtn = document.getElementById('copy-emails');
+const downloadEmailsBtn = document.getElementById('download-emails');
+const emailsList = document.getElementById('emails-list');
+const countEmails = document.getElementById('count-emails');
+
+if (btnExportEmails) {
+    btnExportEmails.addEventListener('click', async () => {
+        const res = await fetch('/api/reponses_liste');
+        if (res.ok) {
+            const { reponses } = await res.json();
+            // Extraire les emails uniques (non vides)
+            const emailsSet = new Set();
+            if (reponses && reponses.length > 0) {
+                reponses.forEach(rep => {
+                    if (rep.email && rep.email.trim()) {
+                        emailsSet.add(rep.email.trim());
+                    }
+                });
+            }
+            const emailsArray = Array.from(emailsSet).sort();
+            
+            // Remplir le tableau
+            emailsList.innerHTML = '';
+            emailsArray.forEach((email, index) => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #ddd';
+                tr.innerHTML = `
+                    <td style="padding:10px; text-align:center;">${index + 1}</td>
+                    <td style="padding:10px;">${email}</td>
+                `;
+                emailsList.appendChild(tr);
+            });
+            
+            countEmails.textContent = emailsArray.length;
+            
+            // Stocker les emails pour la copie/téléchargement
+            window.uniqueEmails = emailsArray;
+            
+            // Afficher le modal
+            modalEmails.style.display = 'block';
+        } else {
+            alert('Erreur lors du chargement des réponses');
+        }
+    });
+}
+
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+        modalEmails.style.display = 'none';
+    });
+}
+
+if (copyEmailsBtn) {
+    copyEmailsBtn.addEventListener('click', () => {
+        if (window.uniqueEmails && window.uniqueEmails.length > 0) {
+            const text = window.uniqueEmails.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyEmailsBtn.textContent;
+                copyEmailsBtn.textContent = '✓ Copié !';
+                setTimeout(() => {
+                    copyEmailsBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
+    });
+}
+
+if (downloadEmailsBtn) {
+    downloadEmailsBtn.addEventListener('click', () => {
+        if (window.uniqueEmails && window.uniqueEmails.length > 0) {
+            const csv = window.uniqueEmails.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'emails_uniques.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+}
+
+// Fermer le modal en cliquant en dehors
+window.addEventListener('click', (event) => {
+    if (event.target === modalEmails) {
+        modalEmails.style.display = 'none';
+    }
+});
