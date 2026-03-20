@@ -198,8 +198,6 @@ if (saveCapaciteBtn) {
 const btnExportEmails = document.getElementById('btn-export-emails');
 const modalEmails = document.getElementById('modal-emails');
 const closeModalBtn = document.getElementById('close-modal');
-const copyEmailsBtn = document.getElementById('copy-emails');
-const downloadEmailsBtn = document.getElementById('download-emails');
 const selectAllCheckboxUnique = document.getElementById('select-all-checkbox-unique');
 const sendSelectedFromUnique = document.getElementById('send-selected-from-unique');
 const emailsList = document.getElementById('emails-list');
@@ -266,7 +264,7 @@ if (selectAllCheckboxUnique) {
 
 // Envoyer email du lieu depuis les emails uniques (emails sélectionnés du modal)
 if (sendSelectedFromUnique) {
-    sendSelectedFromUnique.addEventListener('click', () => {
+    sendSelectedFromUnique.addEventListener('click', async () => {
         const checkboxes = document.querySelectorAll('.unique-email-checkbox:checked');
         if (checkboxes.length === 0) {
             alert('Veuillez sélectionner au moins un email');
@@ -281,38 +279,35 @@ if (sendSelectedFromUnique) {
         const confirmSend = confirm(`Êtes-vous sûr de vouloir envoyer l'email du lieu à ${emailsArray.length} destinataire(s) ?`);
         if (!confirmSend) return;
         
-        displaySelectedEmails(emailsArray);
-    });
-}
-
-if (copyEmailsBtn) {
-    copyEmailsBtn.addEventListener('click', () => {
-        if (window.uniqueEmails && window.uniqueEmails.length > 0) {
-            const text = window.uniqueEmails.join('\n');
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = copyEmailsBtn.textContent;
-                copyEmailsBtn.textContent = '✓ Copié !';
-                setTimeout(() => {
-                    copyEmailsBtn.textContent = originalText;
-                }, 2000);
+        // Désactiver le bouton pendant l'envoi
+        sendSelectedFromUnique.disabled = true;
+        const originalText = sendSelectedFromUnique.textContent;
+        sendSelectedFromUnique.textContent = '⏳ Envoi en cours...';
+        
+        try {
+            const response = await fetch('/api/envoyer-lieu', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emails: emailsArray })
             });
-        }
-    });
-}
-
-if (downloadEmailsBtn) {
-    downloadEmailsBtn.addEventListener('click', () => {
-        if (window.uniqueEmails && window.uniqueEmails.length > 0) {
-            const csv = window.uniqueEmails.join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'emails_uniques.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            
+            if (response.ok) {
+                const data = await response.json();
+                // Fermer le modal emails uniques
+                modalEmails.style.display = 'none';
+                
+                // Afficher le message de succès
+                alert(`✅ Emails envoyés avec succès !\n\n${data.successCount} email(s) envoyé(s)\n${data.errorCount > 0 ? data.errorCount + ' erreur(s)' : ''}`);
+            } else {
+                const error = await response.json();
+                alert(`❌ Erreur : ${error.error}`);
+            }
+        } catch (err) {
+            alert(`❌ Erreur réseau : ${err.message}`);
+        } finally {
+            // Réactiver le bouton
+            sendSelectedFromUnique.disabled = false;
+            sendSelectedFromUnique.textContent = originalText;
         }
     });
 }
