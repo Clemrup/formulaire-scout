@@ -201,7 +201,6 @@ const closeModalBtn = document.getElementById('close-modal');
 const copyEmailsBtn = document.getElementById('copy-emails');
 const downloadEmailsBtn = document.getElementById('download-emails');
 const selectAllCheckboxUnique = document.getElementById('select-all-checkbox-unique');
-const selectAllBtnUnique = document.getElementById('select-all-unique-emails');
 const sendSelectedFromUnique = document.getElementById('send-selected-from-unique');
 const emailsList = document.getElementById('emails-list');
 const countEmails = document.getElementById('count-emails');
@@ -262,17 +261,6 @@ if (selectAllCheckboxUnique) {
     selectAllCheckboxUnique.addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.unique-email-checkbox');
         checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-}
-
-if (selectAllBtnUnique) {
-    selectAllBtnUnique.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.unique-email-checkbox');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        if (selectAllCheckboxUnique) {
-            selectAllCheckboxUnique.checked = !allChecked;
-        }
     });
 }
 
