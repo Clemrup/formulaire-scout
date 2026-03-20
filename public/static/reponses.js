@@ -43,7 +43,6 @@ async function loadReponses() {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-id', rep.id);
                 tr.innerHTML = `
-                    <td style="text-align: center;"><input type="checkbox" class="row-checkbox" data-email="${rep.email || ''}"></td>
                     <td>${index + 1}</td>
                     <td class="nom">${rep.nom}</td>
                     <td class="prenom">${rep.prenom}</td>
@@ -284,6 +283,9 @@ const modalEmails = document.getElementById('modal-emails');
 const closeModalBtn = document.getElementById('close-modal');
 const copyEmailsBtn = document.getElementById('copy-emails');
 const downloadEmailsBtn = document.getElementById('download-emails');
+const selectAllCheckboxUnique = document.getElementById('select-all-checkbox-unique');
+const selectAllBtnUnique = document.getElementById('select-all-unique-emails');
+const sendSelectedFromUnique = document.getElementById('send-selected-from-unique');
 const emailsList = document.getElementById('emails-list');
 const countEmails = document.getElementById('count-emails');
 
@@ -303,12 +305,13 @@ if (btnExportEmails) {
             }
             const emailsArray = Array.from(emailsSet).sort();
             
-            // Remplir le tableau
+            // Remplir le tableau avec checkboxes
             emailsList.innerHTML = '';
             emailsArray.forEach((email, index) => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #ddd';
                 tr.innerHTML = `
+                    <td style="padding:10px; text-align:center;"><input type="checkbox" class="unique-email-checkbox" data-email="${email}"></td>
                     <td style="padding:10px; text-align:center;">${index + 1}</td>
                     <td style="padding:10px;">${email}</td>
                 `;
@@ -316,6 +319,9 @@ if (btnExportEmails) {
             });
             
             countEmails.textContent = emailsArray.length;
+            
+            // Réinitialiser les checkboxes
+            if (selectAllCheckboxUnique) selectAllCheckboxUnique.checked = false;
             
             // Stocker les emails pour la copie/téléchargement
             window.uniqueEmails = emailsArray;
@@ -331,6 +337,42 @@ if (btnExportEmails) {
 if (closeModalBtn) {
     closeModalBtn.addEventListener('click', () => {
         modalEmails.style.display = 'none';
+    });
+}
+
+// Gérer "Sélectionner tout" pour les emails uniques
+if (selectAllCheckboxUnique) {
+    selectAllCheckboxUnique.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.unique-email-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+}
+
+if (selectAllBtnUnique) {
+    selectAllBtnUnique.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.unique-email-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        if (selectAllCheckboxUnique) {
+            selectAllCheckboxUnique.checked = !allChecked;
+        }
+    });
+}
+
+// Envoyer email du lieu depuis les emails uniques (emails sélectionnés du modal)
+if (sendSelectedFromUnique) {
+    sendSelectedFromUnique.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.unique-email-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Veuillez sélectionner au moins un email');
+            return;
+        }
+        
+        const emailsArray = Array.from(checkboxes)
+            .map(cb => cb.getAttribute('data-email'))
+            .filter(email => email && email.trim());
+        
+        displaySelectedEmails(emailsArray);
     });
 }
 
@@ -375,9 +417,6 @@ window.addEventListener('click', (event) => {
 
 // ===== GESTION DE LA SÉLECTION DES EMAILS POUR L'ENVOI =====
 
-const btnSelectAll = document.getElementById('btn-select-all');
-const btnSendEmail = document.getElementById('btn-send-email');
-const selectAllCheckbox = document.getElementById('select-all-checkbox');
 const modalSelectedEmails = document.getElementById('modal-selected-emails');
 const closeModalSelectedBtn = document.getElementById('close-modal-selected');
 const copySelectedEmailsBtn = document.getElementById('copy-selected-emails');
@@ -386,60 +425,27 @@ const openEmailClientBtn = document.getElementById('open-email-client');
 const selectedEmailsList = document.getElementById('selected-emails-list');
 const countSelected = document.getElementById('count-selected');
 
-// Gérer le "Sélectionner tout"
-if (btnSelectAll) {
-    btnSelectAll.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.row-checkbox');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        checkboxes.forEach(cb => cb.checked = !allChecked);
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = !allChecked;
-        }
+// Fonction réutilisable pour afficher les emails sélectionnés dans le modal
+function displaySelectedEmails(emailsArray) {
+    // Remplir le tableau du modal
+    selectedEmailsList.innerHTML = '';
+    emailsArray.forEach((email, index) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #ddd';
+        tr.innerHTML = `
+            <td style="padding:10px; text-align:center;">${index + 1}</td>
+            <td style="padding:10px;">${email}</td>
+        `;
+        selectedEmailsList.appendChild(tr);
     });
-}
-
-// Synchro du checkbox "tout sélectionner"
-if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.row-checkbox');
-        checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-}
-
-// Bouton "Envoyer email du lieu"
-if (btnSendEmail) {
-    btnSendEmail.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.row-checkbox:checked');
-        if (checkboxes.length === 0) {
-            alert('Veuillez sélectionner au moins une personne');
-            return;
-        }
-        
-        // Récupérer les emails sélectionnés
-        const emailsArray = Array.from(checkboxes)
-            .map(cb => cb.getAttribute('data-email'))
-            .filter(email => email && email.trim());
-        
-        // Remplir le tableau du modal
-        selectedEmailsList.innerHTML = '';
-        emailsArray.forEach((email, index) => {
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #ddd';
-            tr.innerHTML = `
-                <td style="padding:10px; text-align:center;">${index + 1}</td>
-                <td style="padding:10px;">${email}</td>
-            `;
-            selectedEmailsList.appendChild(tr);
-        });
-        
-        countSelected.textContent = emailsArray.length;
-        
-        // Stocker les emails sélectionnés
-        window.selectedEmails = emailsArray;
-        
-        // Afficher le modal
-        modalSelectedEmails.style.display = 'block';
-    });
+    
+    countSelected.textContent = emailsArray.length;
+    
+    // Stocker les emails sélectionnés
+    window.selectedEmails = emailsArray;
+    
+    // Afficher le modal
+    modalSelectedEmails.style.display = 'block';
 }
 
 if (closeModalSelectedBtn) {
