@@ -54,39 +54,77 @@ module.exports = async (req, res) => {
             await transporter.sendMail({
                 from: 'lescompaventhuriers@gmail.com',
                 to: email,
-                subject: 'Confirmation de votre inscription pour la rétro des Compa\'venthuriers',
-                html: `
-                    <h2 style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 24px;">
-                        Bonjour ${prenom},
-                    </h2>
+                subject: 'Confirmation de votre inscription - Rétro des Compa\'venthuriers',
+                html: `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation d'inscription - Compa'venthuriers</title>
+</head>
+<body style="font-family: Raleway, Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #003a5d; font-size: 24px; margin-top: 0;">
+            Bonjour ${prenom},
+        </h2>
 
-                    <p style="font-family: Raleway, Arial, sans-serif; color: #003a5d; font-size: 16px;">
-                        <strong>Inscription confirmée 🎉</strong>
-                        <br>
-                        Merci pour votre inscription à la rétro des Compa'venthuriers !
-                        <br>
-                        Nous vous confirmons que votre présence est bien enregistrée, et nous avons hâte de vous retrouver 😊
-                        <br><br>
+        <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
+            <strong>🎉 Votre inscription est confirmée !</strong>
+            <br><br>
+            Merci pour votre inscription à la rétro des Compa'venthuriers ! Nous vous confirmons que votre présence est bien enregistrée.
+            <br>
+            Nous avons hâte de vous retrouver et de partager ce moment ensemble ! 😊
+        </p>
 
-                        <strong>📅 Informations pratiques</strong>
-                        <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Date :</strong> 11 avril 2026
-                        <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Lieu : <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank" rel="noopener noreferrer"">CSRA à Mulhouse (5 Rue des Frères Lumière, Mulhouse)</a></strong>
-                        <br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<strong>- Horaire :</strong> 19h00
-                        <br><br>
+        <!-- Informations pratiques -->
+        <div style="background-color: #f0f4f8; border-left: 4px solid #2d622b; padding: 20px; margin: 20px 0; border-radius: 4px;">
+            <h3 style="color: #003a5d; margin-top: 0; font-size: 18px;">📅 Informations pratiques</h3>
+            
+            <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
+                <strong>Date :</strong> Samedi 11 avril 2026
+            </p>
+            <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
+                <strong>Horaire :</strong> 19h00
+            </p>
+            <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
+                <strong>Adresse :</strong><br>
+                CSRA (Centre Sportif Régional Alsace)<br>
+                5 Rue des Frères Lumière<br>
+                68100 Mulhouse
+            </p>
+            <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
+                <strong>🗺️ GPS :</strong> <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank" rel="noopener noreferrer" style="color: #2d622b; text-decoration: underline;">Ouvrir dans Google Maps</a>
+            </p>
+        </div>
 
-                        <strong>🍽️ Sur place</strong>
-                        <br>
-                        Nous avons prévu de quoi manger et boire sur place, 
-                        mais n'hésitez pas à venir avec votre bonne humeur et votre sourire !
-                        <br><br>                    
-                        <strong>À très bientôt !</strong>
-                        <br>
-                        Les Compas'venthuriers
-                    </p>
-                    <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature" style="height: 125px; width: auto;" />`,
+        <!-- Détails supplémentaires -->
+        <div style="background-color: #fffbf0; border-left: 4px solid #d4a574; padding: 20px; margin: 20px 0; border-radius: 4px;">
+            <h3 style="color: #003a5d; margin-top: 0; font-size: 18px;">🍽️ Sur place</h3>
+            <p style="color: #003a5d; margin: 10px 0; font-size: 16px; line-height: 1.6;">
+                Nous avons prévu de quoi manger et boire pour partager ce moment ensemble. 
+                N'hésitez pas à venir avec votre bonne humeur, vos histoires et votre sourire !
+            </p>
+        </div>
+
+        <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
+            Si vous avez des questions ou des contraintes particulières, n'hésitez pas à nous contacter.
+            <br><br>
+
+            <strong>À très bientôt ! 🎊</strong>
+            <br><br>
+
+            <em>Les Compa'venthuriers</em>
+        </p>
+
+        <!-- Signature -->
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <img src="https://formulaire-scout.vercel.app/images/signature-mail.png" alt="Signature Compa'venthuriers" style="height: 100px; width: auto;" />
+        </div>
+
+    </div>
+</body>
+</html>`,
             });
         } catch (mailErr) {
             // Optionnel : log l'erreur d'envoi de mail, mais ne bloque pas l'inscription
