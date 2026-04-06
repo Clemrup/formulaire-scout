@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
                         <strong>Date :</strong> Samedi 11 avril 2026
                     </p>
                     <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
-                        <strong>Horaire :</strong> 19h00
+                        <strong>Horaire :</strong> 19h00 - 21h30 (environ)
                     </p>
                     <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
                         <strong>Adresse :</strong><br>
