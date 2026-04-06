@@ -41,37 +41,45 @@ module.exports = async (req, res) => {
                 </h2>
             
                 <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
-                    <strong>📍 Le lieu de la rétro est confirmé !</strong>
+                    <strong>🍽️ Bonne nouvelle !</strong> Un <strong>repas traditionnel réunionnais</strong> vous attend après la projection du film ! 
                     <br><br>
-                    Nous avons le plaisir de vous confirmer que la rétro des Compa'venthuriers aura lieu au <strong>CSRA à Mulhouse</strong>. 
-                    <br>
-                    Voici tous les détails pour vous rendre sur place :
+                    Découvrez ci-dessous les détails et <strong>l'important appel à action</strong> concernant votre participation au repas.
                 </p>
             
-                <!-- Informations pratiques -->
-                <div style="background-color: #f0f4f8; border-left: 4px solid #2d622b; padding: 20px; margin: 20px 0; border-radius: 4px;">
-                    <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
-                        <strong>📅 Date :</strong> Samedi 11 avril 2026
+                <!-- Section repas - MAIN CONTENT -->
+                <div style="background-color: #fff4e6; border-left: 4px solid #ff9800; padding: 20px; margin: 20px 0; border-radius: 4px;">
+                    <h3 style="color: #ff9800; margin-top: 0; font-size: 20px; text-align: center;">🍽️ Repas traditionnel réunionnais</h3>
+                    <p style="color: #003a5d; margin: 10px 0; font-size: 16px; line-height: 1.6;">
+                        Après la projection, nous vous offrons un <strong>délicieux repas traditionnel réunionnais</strong> pour partager ce moment ensemble. C'est notre façon de remercier votre présence !
                     </p>
-                    <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
-                        <strong>🕖 Horaire :</strong> 19h00
+                    
+                    <div style="background-color: #ffe8cc; padding: 15px; border-radius: 4px; margin: 15px 0;">
+                        <p style="color: #cc6600; margin: 0; font-size: 16px;">
+                            <strong>⚠️ À lire impérativement :</strong>
+                        </p>
+                        <p style="color: #003a5d; margin: 10px 0; font-size: 16px; line-height: 1.6;">
+                            Si vous <strong>ne souhaitez pas participer au repas</strong> (allergies, contraintes, autres raisons), veuillez nous le signaler au plus vite en envoyant un mail à <a href="mailto:lescompaventhuriers@gmail.com" style="color: #ff9800; font-weight: bold; text-decoration: underline;">lescompaventhuriers@gmail.com</a>.
+                            <br><br>
+                            Cela nous permettra d'adapter le nombre de couverts et d'optimiser l'organisation. <strong>Merci de votre réactivité !</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rappel des infos pratiques (secondaire) -->
+                <div style="background-color: #f5f5f5; border-left: 4px solid #999; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                    <p style="color: #666; margin: 0; font-size: 14px; margin-bottom: 10px;">
+                        <strong>📋 Rappel pratique :</strong>
                     </p>
-                    <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
-                        <strong>📍 Adresse :</strong><br>
-                        CSRA (Centre Sportif Régional Alsace)<br>
-                        5 Rue des Frères Lumière<br>
-                        68100 Mulhouse
-                    </p>
-                    <p style="color: #003a5d; margin: 10px 0; font-size: 16px;">
-                        <strong>🗺️ GPS :</strong> <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank" rel="noopener noreferrer" style="color: #2d622b; text-decoration: underline;">Ouvrir dans Google Maps</a>
+                    <p style="color: #003a5d; margin: 5px 0; font-size: 14px;">
+                        <strong>📅 Samedi 11 avril 2026</strong> à <strong>19h00</strong> | CSRA, Mulhouse | <a href="https://maps.app.goo.gl/PeD4Mo1LaM8QyqLy9" target="_blank" rel="noopener noreferrer" style="color: #2d622b; text-decoration: underline;">Voir sur Maps</a>
                     </p>
                 </div>
-            
+
                 <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
-                    N'hésitez pas à nous contacter si vous avez besoin de précisions ou si vous avez des contraintes particulières.
+                    Nous comptons sur vous ! N'oubliez pas de nous signaler si vous ne pouvez pas participer au repas.
                     <br><br>
             
-                    <strong>Nous avons hâte de vous retrouver ! À très bientôt ! 🎉</strong>
+                    <strong>À très bientôt ! 🎉</strong>
                     <br><br>
             
                     <em>Les Compa'venthuriers</em>
@@ -95,7 +103,7 @@ module.exports = async (req, res) => {
                 await transporter.sendMail({
                     from: 'lescompaventhuriers@gmail.com',
                     to: email,
-                    subject: 'Le lieu de la rétro des Compa\'venthuriers 📍',
+                    subject: '🍽️ Un repas traditionnel réunionnais vous attend !',
                     html: htmlContent
                 });
                 successCount++;
