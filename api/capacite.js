@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
         // Modification de la capacité
         const { capacite } = req.body;
         const newCap = parseInt(capacite, 10);
-        if (isNaN(newCap) || newCap < 1) {
+        if (isNaN(newCap) || newCap < 0) {
             res.status(400).json({ error: 'Capacité invalide' });
             return;
         }
