@@ -18,7 +18,12 @@ async function updatePlacesRestantes() {
                         alert.style.color = 'red';
                         alert.style.fontWeight = 'bold';
                         alert.textContent = "⚠️ La capacité maximale est atteinte, il n'est plus possible de s'inscrire.";
-                        document.querySelector('.container').appendChild(alert);
+                        const videoSection = document.querySelector('.video-section');
+                        if (videoSection) {
+                            videoSection.parentNode.insertBefore(alert, videoSection);
+                        } else {
+                            document.querySelector('.container').appendChild(alert);
+                        }
                     }
                 } else if (formEl) {
                     formEl.style.display = '';
