@@ -10,7 +10,7 @@ async function getCapacite() {
         .limit(1)
         .single();
     if (error) return 20;
-    return data && data.capacite ? data.capacite : 20;
+    return data && data.capacite !== null && data.capacite !== undefined ? data.capacite : 20;
 }
 
 module.exports = async (req, res) => {
