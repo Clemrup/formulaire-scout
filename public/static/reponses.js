@@ -176,7 +176,7 @@ if (saveCapaciteBtn) {
         const capInput = document.getElementById('capacite');
         if (!capInput) return;
         const nouvelleCapacite = parseInt(capInput.value, 10);
-        if (isNaN(nouvelleCapacite) || nouvelleCapacite < 1) {
+        if (isNaN(nouvelleCapacite) || nouvelleCapacite < 0) {
             alert('Veuillez entrer une capacité valide.');
             return;
         }
