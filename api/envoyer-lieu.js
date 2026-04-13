@@ -41,14 +41,15 @@ module.exports = async (req, res) => {
             </h2>
         
             <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
-                Nous souhaitions vous remercier sincèrement pour votre présence lors de notre rétrospective de camp compagnon T2 samedi dernier.
+                Nous souhaitions vous remercier sincèrement pour votre présence lors de notre rétrospective de camp T2 samedi dernier.
             </p>
 
             <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
                 Nous espérons que cela vous a plu et que vous avez passé un bon moment à nos côtés, en revivant avec nous cette belle aventure à La Réunion. 
             </p>
             <p style="color: #003a5d; font-size: 16px; line-height: 1.6;">
-                Nous espérons également que ce moment de partage vous a permis de découvrir (ou redécouvrir) notre expérience, nos actions sur place, ainsi que tous les souvenirs que nous en gardons.            </p>
+                Nous espérons également que ce moment vous a permis de découvrir (ou mieux redécouvrir) notre incroyable camp T2, nos actions menées sur place, ainsi que tous les souvenirs que nous en gardons.
+            </p>
             <!-- Section vidéo -->
             <div style="background-color: #f0f4f8; border-left: 4px solid #2d622b; padding: 20px; margin: 20px 0; border-radius: 4px;">
                 <h3 style="color: #003a5d; margin-top: 0; font-size: 18px;">🎬 Revoir le film</h3>
